@@ -8,8 +8,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 public class DetailActivity extends AppCompatActivity {
 
     private ImageView mPosterView;
@@ -48,12 +46,13 @@ public class DetailActivity extends AppCompatActivity {
         populateUI();
     }
 
-    public void populateUI() {
+    private void populateUI() {
         Picasso.with(this).load(mPosterUrl).into(mPosterView);
+        mPosterView.setAdjustViewBounds(true);
 
         mTitleView.setText(mTitle);
         mDescriptionView.setText(mDescription);
-        mRatingView.setText(Double.toString(mRating));
-        mReleaseDateView.setText(mReleaseDate);
+        mRatingView.setText(getString(R.string.out_of_ten, mRating));
+        mReleaseDateView.setText(mReleaseDate.substring(0, 4));
     }
 }

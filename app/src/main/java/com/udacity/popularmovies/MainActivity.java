@@ -4,14 +4,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -26,14 +21,23 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView mPosterRecycler;
-    private GridLayoutManager mLayoutManager;
-    private MovieAdapter mMovieAdapter;
-
-    private GridLayout mPosterGrid;
+    private LinearLayout mPosterGrid;
 
     private String mSortType;
 
+    /* String values for JSON parsing */
+    private final String PARAM_MOVIE_RESULTS = "results";
+    private final String PARAM_POSTER_PATH = "poster_path";
+    private final String PARAM_TITLE = "title";
+    private final String PARAM_OVERVIEW = "overview";
+    private final String PARAM_VOTE_AVERAGE = "vote_average";
+    private final String PARAM_RELEASE_DATE = "release_date";
+
+    /* URL components for retrieving poster images */
+    private final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/";
+    private final String POSTER_SIZE = "w185/";
+
+    /* Storage for parsed JSON data */
     private String[] mPosterPaths;
     private String[] mTitleList;
     private String[] mDescriptionList;
@@ -44,17 +48,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         mPosterGrid = findViewById(R.id.poster_grid);
-
-        mPosterRecycler = findViewById(R.id.poster_recycler_view);
-        mLayoutManager = new GridLayoutManager(this, 2);
-        mPosterRecycler.setLayoutManager(mLayoutManager);
-        mMovieAdapter = new MovieAdapter(this);
-        mPosterRecycler.setAdapter(mMovieAdapter);
-
-        mSortType = this.getString(R.string.popular_sort);
-
+        mSortType = this.getString(R.string.popular_sort); //Sets "Most Popular" as default sort
         new FetchMoviesTask().execute();
     }
 
@@ -81,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //referred udacity code
     public class FetchMoviesTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... strings) {
@@ -101,42 +95,60 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void extractMovieData(String jsonString) {
+    private void extractMovieData(String jsonString) {
         try {
             JSONObject moviesObject = new JSONObject(jsonString);
-            JSONArray movieResults = moviesObject.getJSONArray("results");
+            JSONArray movieResults = moviesObject.getJSONArray(PARAM_MOVIE_RESULTS);
             mPosterPaths = new String[movieResults.length()];
             mTitleList = new String[movieResults.length()];
             mDescriptionList = new String[movieResults.length()];
             mRatingList = new double[movieResults.length()];
             mDateList = new String[movieResults.length()];
             for (int i = 0; i < movieResults.length(); i++) {
-                mPosterPaths[i] = movieResults.getJSONObject(i).getString("poster_path");
-                mTitleList[i] = movieResults.getJSONObject(i).getString("title");
-                mDescriptionList[i] = movieResults.getJSONObject(i).getString("overview");
-                mRatingList[i] = movieResults.getJSONObject(i).getDouble("vote_average");
-                mDateList[i] = movieResults.getJSONObject(i).getString("release_date");
+                mPosterPaths[i] = movieResults.getJSONObject(i).optString(PARAM_POSTER_PATH);
+                mTitleList[i] = movieResults.getJSONObject(i).optString(PARAM_TITLE);
+                mDescriptionList[i] = movieResults.getJSONObject(i).optString(PARAM_OVERVIEW);
+                mRatingList[i] = movieResults.getJSONObject(i).optDouble(PARAM_VOTE_AVERAGE);
+                mDateList[i] = movieResults.getJSONObject(i).optString(PARAM_RELEASE_DATE);
             }
         } catch(JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public void populateUI() {
-        int gridSize = mPosterPaths.length;
+    private void populateUI() {
+        mPosterGrid.removeAllViews();
 
-        //clear existing poster views
+        LinearLayout.LayoutParams rowLayoutParams =
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+        rowLayoutParams.weight = 1;
+        LinearLayout.LayoutParams posterLayoutParams =
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+        posterLayoutParams.weight = 1;
 
-        final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/";
-        final String POSTER_SIZE = "w185/";
+        //Generate new grid row
+        LinearLayout gridRow = new LinearLayout(this);
+        gridRow.setLayoutParams(rowLayoutParams);
+        gridRow.setOrientation(LinearLayout.HORIZONTAL);
+        mPosterGrid.addView(gridRow);
+
         for (int i = 0; i < mPosterPaths.length; i++) {
+            if (gridRow.getChildCount() >= 2) { //If grid row is already full, generate new one.
+                gridRow = new LinearLayout(this);
+                gridRow.setLayoutParams(rowLayoutParams);
+                gridRow.setOrientation(LinearLayout.HORIZONTAL);
+                mPosterGrid.addView(gridRow);
+            }
+
             final String posterUrl = POSTER_BASE_URL + POSTER_SIZE + mPosterPaths[i];
             ImageView poster = new ImageView(this);
-            LinearLayout.LayoutParams layoutParams =
-                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
-            poster.setLayoutParams(layoutParams);
+            poster.setLayoutParams(posterLayoutParams);
             Picasso.with(this).load(posterUrl).into(poster);
+            poster.setAdjustViewBounds(true);
+
+            /* Sends movie data into DetailActivity via Intent */
             final String title = mTitleList[i];
             final String description = mDescriptionList[i];
             final double rating = mRatingList[i];
@@ -153,8 +165,8 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(detailIntent);
                 }
             });
-//            MovieAdapter.MovieAdapterViewHolder posterVh = new MovieAdapter.MovieAdapterViewHolder(poster, title);
-            mPosterGrid.addView(poster);
+
+            gridRow.addView(poster);
         }
     }
 }

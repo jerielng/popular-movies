@@ -1,10 +1,6 @@
 package com.udacity.popularmovies.utilities;
 
-import android.content.res.Resources;
 import android.net.Uri;
-
-import com.udacity.popularmovies.R;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -17,6 +13,7 @@ public class NetworkUtils {
     private static final String API_VERSION = "3";
     private static final String MOVIE = "movie";
     private static final String API_KEY_PARAM = "api_key";
+    /* API Key has been removed according to ToS usage */
     private static final String API_KEY_VALUE = "";
 
     public static URL buildMovieUrl(String sortType) {
@@ -35,7 +32,7 @@ public class NetworkUtils {
         return url;
     }
 
-    //taken from udacity code
+    /* This code was referenced from the Udacity Sunshine exercise on Networking */
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {

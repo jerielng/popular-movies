@@ -5,10 +5,11 @@
     <string name="popular_sort">popular</string>
     <string name="highest_rated_sort">top_rated</string>
     <string name="mark_favorite">Mark As Favorite</string>
+    <string name="default_description">Movie Poster</string>
     <string name="poster_url">Poster URL</string>
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="rating">Rating</string>
     <string name="release_date">Release Date</string>
-    <string name="out_of_ten">/10</string>
+    <string name="out_of_ten">%1$.1f/10</string>
 </resources>
