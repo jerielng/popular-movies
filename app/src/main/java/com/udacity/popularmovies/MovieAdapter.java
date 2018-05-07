@@ -6,23 +6,21 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
     private Context mContext;
-    private Image[] mPosterList;
-    private String[] mIdList;
 
-    public MovieAdapter(Context context, Image[] posterList, String[] idList) {
+    public MovieAdapter(Context context) {
         mContext = context;
-        mPosterList = posterList;
-        mIdList = idList;
     }
 
     class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
         //public final ImageView mPosterImageView;
-        //public final String movieId;
-        public MovieAdapterViewHolder(View view) {
+        public final String mTitle;
+        public MovieAdapterViewHolder(View view, String title) {
             super(view);
+            mTitle = title;
         }
     }
 

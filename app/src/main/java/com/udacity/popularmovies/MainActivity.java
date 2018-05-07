@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -26,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mPosterRecycler;
     private GridLayoutManager mLayoutManager;
+    private MovieAdapter mMovieAdapter;
+
+    private GridLayout mPosterGrid;
 
     private String mSortType;
 
@@ -40,9 +45,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mPosterGrid = findViewById(R.id.poster_grid);
+
         mPosterRecycler = findViewById(R.id.poster_recycler_view);
-        mLayoutManager = new GridLayoutManager(this, GridLayoutManager.DEFAULT_SPAN_COUNT);
+        mLayoutManager = new GridLayoutManager(this, 2);
         mPosterRecycler.setLayoutManager(mLayoutManager);
+        mMovieAdapter = new MovieAdapter(this);
+        mPosterRecycler.setAdapter(mMovieAdapter);
+
         mSortType = this.getString(R.string.popular_sort);
 
         new FetchMoviesTask().execute();
@@ -119,23 +129,32 @@ public class MainActivity extends AppCompatActivity {
 
         final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/";
         final String POSTER_SIZE = "w185/";
-        for (String i : mPosterPaths) {
-            String posterUrl = POSTER_BASE_URL + POSTER_SIZE + i;
+        for (int i = 0; i < mPosterPaths.length; i++) {
+            final String posterUrl = POSTER_BASE_URL + POSTER_SIZE + mPosterPaths[i];
             ImageView poster = new ImageView(this);
             LinearLayout.LayoutParams layoutParams =
                     new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
             poster.setLayoutParams(layoutParams);
             Picasso.with(this).load(posterUrl).into(poster);
+            final String title = mTitleList[i];
+            final String description = mDescriptionList[i];
+            final double rating = mRatingList[i];
+            final String releaseDate = mDateList[i];
             poster.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class); //query with id
-                    //detailIntent.putExtra(movieId);
+                    Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
+                    detailIntent.putExtra(getString(R.string.poster_url), posterUrl);
+                    detailIntent.putExtra(getString(R.string.title), title);
+                    detailIntent.putExtra(getString(R.string.description), description);
+                    detailIntent.putExtra(getString(R.string.rating), rating);
+                    detailIntent.putExtra(getString(R.string.release_date), releaseDate);
                     startActivity(detailIntent);
                 }
             });
-            mPosterRecycler.addView(poster);
+//            MovieAdapter.MovieAdapterViewHolder posterVh = new MovieAdapter.MovieAdapterViewHolder(poster, title);
+            mPosterGrid.addView(poster);
         }
     }
 }
