@@ -8,4 +8,18 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Dividing line to delineate sections. -->
+    <style name="SectionBreak">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1.5sp</item>
+        <item name="android:background">#7f7f7f</item>
+    </style>
+
+    <!-- Dividing line to delineate list elements. -->
+    <style name="ElementBreak">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1sp</item>
+        <item name="android:background">#7f7f7f</item>
+    </style>
+
 </resources>

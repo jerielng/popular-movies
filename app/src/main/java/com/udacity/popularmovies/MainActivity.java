@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private final String PARAM_OVERVIEW = "overview";
     private final String PARAM_VOTE_AVERAGE = "vote_average";
     private final String PARAM_RELEASE_DATE = "release_date";
+    private final String PARAM_ID = "id";
 
     /* URL components for retrieving poster images */
     private final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/";
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] mDescriptionList;
     private double[] mRatingList;
     private String[] mDateList;
+    private String[] mIdList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
             case (R.id.sort_highest_rated):
                 mSortType = this.getString(R.string.highest_rated_sort);
                 new FetchMoviesTask().execute();
+                return true;
+            case (R.id.sort_favorites):
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -104,12 +108,14 @@ public class MainActivity extends AppCompatActivity {
             mDescriptionList = new String[movieResults.length()];
             mRatingList = new double[movieResults.length()];
             mDateList = new String[movieResults.length()];
+            mIdList = new String[movieResults.length()];
             for (int i = 0; i < movieResults.length(); i++) {
                 mPosterPaths[i] = movieResults.getJSONObject(i).optString(PARAM_POSTER_PATH);
                 mTitleList[i] = movieResults.getJSONObject(i).optString(PARAM_TITLE);
                 mDescriptionList[i] = movieResults.getJSONObject(i).optString(PARAM_OVERVIEW);
                 mRatingList[i] = movieResults.getJSONObject(i).optDouble(PARAM_VOTE_AVERAGE);
                 mDateList[i] = movieResults.getJSONObject(i).optString(PARAM_RELEASE_DATE);
+                mIdList[i] = movieResults.getJSONObject(i).optString(PARAM_ID);
             }
         } catch(JSONException e) {
             e.printStackTrace();
@@ -153,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
             final String description = mDescriptionList[i];
             final double rating = mRatingList[i];
             final String releaseDate = mDateList[i];
+            final String id = mIdList[i];
             poster.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -162,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
                     detailIntent.putExtra(getString(R.string.description), description);
                     detailIntent.putExtra(getString(R.string.rating), rating);
                     detailIntent.putExtra(getString(R.string.release_date), releaseDate);
+                    detailIntent.putExtra(getString(R.string.movie_id), id);
                     startActivity(detailIntent);
                 }
             });

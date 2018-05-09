@@ -6,8 +6,10 @@
     <item android:id="@+id/sort_most_pop"
         android:title="@string/most_popular"
         app:showAsAction="never"/>
-
     <item android:id="@+id/sort_highest_rated"
         android:title="@string/highest_rated"
+        app:showAsAction="never"/>
+    <item android:id="@+id/sort_favorites"
+        android:title="@string/favorites"
         app:showAsAction="never"/>
 </menu>
