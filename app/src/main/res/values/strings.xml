@@ -5,8 +5,10 @@
     <string name="highest_rated">Highest Rated</string>
     <string name="popular_sort">popular</string>
     <string name="highest_rated_sort">top_rated</string>
+    <string name="favorites_sort">favorites</string>
     <string name="mark_favorite">Mark As Favorite</string>
     <string name="favorite_marked">Marked As Favorite</string>
+    <string name="share_trailer">Share Trailer</string>
     <string name="default_description">Movie Poster</string>
     <string name="poster_url">Poster URL</string>
     <string name="title">Title</string>

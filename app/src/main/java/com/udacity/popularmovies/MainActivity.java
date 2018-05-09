@@ -2,6 +2,7 @@ package com.udacity.popularmovies;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,6 +23,7 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     private LinearLayout mPosterGrid;
+    private LinearLayout mFavoritesList;
 
     private String mSortType;
 
@@ -53,10 +55,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mPosterGrid = findViewById(R.id.poster_grid);
-        if (mSortType == null) {
-            mSortType = this.getString(R.string.popular_sort); //Sets "Most Popular" as default sort
-        }
-        new FetchMoviesTask().execute();
+        mFavoritesList = findViewById(R.id.favorites_list);
     }
 
     @Override
@@ -65,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /* Menu for selecting movie sort type */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId())
@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
                 new FetchMoviesTask().execute();
                 return true;
             case (R.id.sort_favorites):
+                mSortType = this.getString(R.string.favorites_sort);
+                loadFavorites();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -95,10 +97,24 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
             mSortType = savedInstanceState.getString(savedSort);
+            if (mSortType.equals(this.getString(R.string.favorites_sort))) {
+                loadFavorites();
+            } else {
+                new FetchMoviesTask().execute();
+            }
+        }
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if (mSortType == null) {
+            mSortType = getString(R.string.popular_sort);
             new FetchMoviesTask().execute();
         }
     }
 
+    /* Makes REST call to online movie database. Returns with data for each movie. */
     public class FetchMoviesTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... strings) {
@@ -141,7 +157,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* Creates grid rows and add them to existing LinearLayout. Each grid row should contain
+     * no more than 2 movie posters. This function clears out all pre-existing views from the
+     * UI before re-populating them each time.
+     */
     private void populateUI() {
+        mFavoritesList.setVisibility(View.GONE);
+        mPosterGrid.setVisibility(View.VISIBLE);
         mPosterGrid.removeAllViews();
 
         LinearLayout.LayoutParams rowLayoutParams =
@@ -195,5 +217,12 @@ public class MainActivity extends AppCompatActivity {
 
             gridRow.addView(poster);
         }
+    }
+
+    private void loadFavorites() {
+        mPosterGrid.setVisibility(View.GONE);
+        mFavoritesList.setVisibility(View.VISIBLE);
+
+        //query SQLite database
     }
 }

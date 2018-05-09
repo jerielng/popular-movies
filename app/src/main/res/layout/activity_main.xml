@@ -10,6 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimary">
-        <include layout="@layout/poster_grid"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <include layout="@layout/poster_grid"/>
+            <include layout="@layout/favorites_list"/>
+        </LinearLayout>
     </ScrollView>
 </merge>

@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.popularmovies.utilities.NetworkUtils;
@@ -28,6 +29,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mRatingView;
     private TextView mReleaseDateView;
     private Button mFavoriteButton;
+    private Button mShareButton;
 
     private LinearLayout mTrailerList;
     private LinearLayout mReviewList;
@@ -66,6 +68,7 @@ public class DetailActivity extends AppCompatActivity {
         mRatingView = findViewById(R.id.rating_text);
         mReleaseDateView = findViewById(R.id.date_text);
         mFavoriteButton = findViewById(R.id.favorite_button);
+        mShareButton = findViewById(R.id.share_button);
 
         mTrailerList = findViewById(R.id.trailer_list);
         mReviewList = findViewById(R.id.review_list);
@@ -101,6 +104,28 @@ public class DetailActivity extends AppCompatActivity {
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((Button) v).setTextColor(getResources().getColor(R.color.favorited));
+                Toast.makeText(DetailActivity.this,
+                        "Saved to Favorites!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailActivity.this,
+                        "Removed from Favorites!", Toast.LENGTH_SHORT).show();
+                //query database with id
+                //if exists - delete
+                //if exists - change color to white
+                //if doesn't exist - insert id and title
+                //if doesn't exist - change color to favorited
+            }
+        });
+
+        mShareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_TEXT,
+                        "Check out the trailer for " + mTitle + " at " +
+                                TRAILER_BASE_URL + mTrailerKeys[0]);
+                startActivity(shareIntent);
             }
         });
     }

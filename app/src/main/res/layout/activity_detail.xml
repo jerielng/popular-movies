@@ -29,13 +29,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/default_description"
-                    android:layout_weight="3"
+                    android:layout_weight="4"
                     android:padding="10sp"
                     android:id="@+id/poster_image"/>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="1"
                     android:layout_gravity="center"
                     android:orientation="vertical">
                     <TextView
@@ -57,9 +57,22 @@
                         android:background="@color/detailTheme"
                         android:layout_gravity="center_horizontal"
                         android:padding="7sp"
+                        android:layout_margin="10sp"
                         android:textColor="@color/fontLight"
                         android:text="@string/mark_favorite"
                         android:id="@+id/favorite_button"/>
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/detailTheme"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="7sp"
+                        android:layout_margin="10sp"
+                        android:textColor="@color/fontLight"
+                        android:text="@string/share_trailer"
+                        android:id="@+id/share_button"
+                        android:actionProviderClass=
+                            "android.widget.ShareActionProvider"/>
                 </LinearLayout>
             </LinearLayout>
             <TextView
