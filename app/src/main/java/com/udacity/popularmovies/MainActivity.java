@@ -46,12 +46,16 @@ public class MainActivity extends AppCompatActivity {
     private String[] mDateList;
     private String[] mIdList;
 
+    private final String savedSort = "Saved Sort Type";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mPosterGrid = findViewById(R.id.poster_grid);
-        mSortType = this.getString(R.string.popular_sort); //Sets "Most Popular" as default sort
+        if (mSortType == null) {
+            mSortType = this.getString(R.string.popular_sort); //Sets "Most Popular" as default sort
+        }
         new FetchMoviesTask().execute();
     }
 
@@ -77,6 +81,21 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(savedSort, mSortType);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            mSortType = savedInstanceState.getString(savedSort);
+            new FetchMoviesTask().execute();
         }
     }
 

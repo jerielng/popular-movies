@@ -15,8 +15,9 @@
     <string name="release_date">Release Date</string>
     <string name="out_of_ten">%1$.1f/10</string>
     <string name="movie_id">Movie ID</string>
-    <string name="trailers">Trailers:</string>
+    <string name="trailers">Trailers</string>
     <string name="no_trailers">No trailers available</string>
-    <string name="reviews">Reviews:</string>
+    <string name="reviews">Reviews</string>
     <string name="no_reviews">No reviews available</string>
+    <string name="next_review">\></string>
 </resources>

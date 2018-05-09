@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="fontLight">#FFFFFF</color>
     <color name="detailTheme">#0099cc</color>
+    <color name="favorited">#FFAE42</color>
 </resources>

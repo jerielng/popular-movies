@@ -49,6 +49,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:textSize="20sp"
+                        android:padding="10sp"
                         android:id="@+id/rating_text"/>
                     <Button
                         android:layout_width="wrap_content"
@@ -56,6 +57,7 @@
                         android:background="@color/detailTheme"
                         android:layout_gravity="center_horizontal"
                         android:padding="7sp"
+                        android:textColor="@color/fontLight"
                         android:text="@string/mark_favorite"
                         android:id="@+id/favorite_button"/>
                 </LinearLayout>
@@ -66,12 +68,14 @@
                 android:padding="15sp"
                 android:textSize="15sp"
                 android:id="@+id/description_text"/>
-            <View style="@style/SectionBreak"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="15sp"
                 android:textSize="20sp"
+                android:background="@color/detailTheme"
+                android:textColor="@color/fontLight"
+                android:textAlignment="center"
                 android:text="@string/trailers"/>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -79,19 +83,42 @@
                 android:orientation="vertical"
                 android:padding="15sp"
                 android:id="@+id/trailer_list"></LinearLayout>
-            <View style="@style/SectionBreak"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="15sp"
                 android:textSize="20sp"
+                android:background="@color/detailTheme"
+                android:textColor="@color/fontLight"
+                android:textAlignment="center"
                 android:text="@string/reviews"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="15sp"
-                android:id="@+id/review_list"></LinearLayout>
+                android:id="@+id/review_list">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:id="@+id/author_text"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textStyle="italic"
+                    android:padding="25sp"
+                    android:id="@+id/content_text"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="@string/next_review"
+                    android:background="@color/detailTheme"
+                    android:textColor="@color/fontLight"
+                    android:id="@+id/next_review_button"/>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

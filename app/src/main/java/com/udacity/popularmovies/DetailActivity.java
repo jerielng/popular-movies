@@ -17,7 +17,6 @@ import com.udacity.popularmovies.utilities.NetworkUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.net.URL;
 
@@ -54,6 +53,8 @@ public class DetailActivity extends AppCompatActivity {
     private String[] mReviewAuthors;
     private String[] mReviewContent;
 
+    private int reviewCounter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +69,8 @@ public class DetailActivity extends AppCompatActivity {
 
         mTrailerList = findViewById(R.id.trailer_list);
         mReviewList = findViewById(R.id.review_list);
+
+        reviewCounter = 0;
 
         /* Extract movie data from MainActivity Intent */
         Intent mainIntent = getIntent();
@@ -205,20 +208,29 @@ public class DetailActivity extends AppCompatActivity {
 
     public void loadReviewUI() {
         if (mReviewContent.length == 0) {
+            findViewById(R.id.author_text).setVisibility(View.GONE);
+            findViewById(R.id.content_text).setVisibility(View.GONE);
+            findViewById(R.id.next_review_button).setVisibility(View.GONE);
+
             TextView noReviews = new TextView(this);
             noReviews.setText(R.string.no_reviews);
             noReviews.setPadding(0, 0, 0, 50);
             noReviews.setTextSize(15);
             mReviewList.addView(noReviews);
-        }
-        else {
-            for (int i = 0; i < mReviewContent.length; i++)
-            {
-//                LinearLayout reviewItem = new LinearLayout(this, R.layout.review_item);
-//                TextView x = (TextView) reviewItem.findViewById(R.id.author_text);
-//                x.setText(mReviewAuthors[i]);
-//                mReviewList.addView(reviewItem);
+        } else {
+            if (mReviewContent.length == 1) {
+                findViewById(R.id.next_review_button).setVisibility(View.GONE);
             }
+            ((TextView) findViewById(R.id.author_text)).setText(mReviewAuthors[reviewCounter] + ":");
+            ((TextView) findViewById(R.id.content_text)).setText(mReviewContent[reviewCounter]);
+            findViewById(R.id.next_review_button).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (reviewCounter < mReviewContent.length - 1) { reviewCounter++; }
+                    else { reviewCounter = 0; }
+                    loadReviewUI();
+                }
+            });
         }
     }
 }
