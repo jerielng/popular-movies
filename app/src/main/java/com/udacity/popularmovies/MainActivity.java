@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -28,7 +29,7 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LinearLayout mPosterGrid;
+    private GridLayout mPosterGrid;
     private ScrollView mScrollView;
 
     private String mSortType;
@@ -62,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mPosterGrid = findViewById(R.id.poster_grid);
         mScrollView = findViewById(R.id.scroll_view);
+        mPosterGrid = findViewById(R.id.poster_grid);
     }
 
     @Override
@@ -181,72 +182,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /* Creates grid rows and add them to existing LinearLayout. Each grid row should contain
-     * no more than 2 movie posters. This function clears out all pre-existing views from the
-     * UI before re-populating them each time.
-     */
-    private void populateUI() {
-        mPosterGrid.removeAllViews();
-
-        LinearLayout.LayoutParams rowLayoutParams =
-                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-        rowLayoutParams.weight = 1;
-        LinearLayout.LayoutParams posterLayoutParams =
-                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-        posterLayoutParams.weight = 1;
-
-        //Generate new grid row
-        LinearLayout gridRow = new LinearLayout(this);
-        gridRow.setLayoutParams(rowLayoutParams);
-        gridRow.setOrientation(LinearLayout.HORIZONTAL);
-        mPosterGrid.addView(gridRow);
-
-        for (int i = 0; i < mPosterPaths.length; i++) {
-            if (gridRow.getChildCount() >= 2) { //If grid row is already full, generate new one.
-                gridRow = new LinearLayout(this);
-                gridRow.setLayoutParams(rowLayoutParams);
-                gridRow.setOrientation(LinearLayout.HORIZONTAL);
-                mPosterGrid.addView(gridRow);
-            }
-
-            final String posterUrl = POSTER_BASE_URL + POSTER_SIZE + mPosterPaths[i];
-            ImageView poster = new ImageView(this);
-            poster.setLayoutParams(posterLayoutParams);
-            Picasso
-                    .with(this)
-                    .load(posterUrl)
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .error(R.drawable.ic_launcher_background)
-                    .into(poster);
-            poster.setAdjustViewBounds(true);
-
-            /* Sends movie data into DetailActivity via Intent */
-            final String posterKey = mPosterPaths[i];
-            final String title = mTitleList[i];
-            final String description = mDescriptionList[i];
-            final double rating = mRatingList[i];
-            final String releaseDate = mDateList[i];
-            final String id = mIdList[i];
-            poster.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
-                    detailIntent.putExtra(getString(R.string.poster_url), posterKey);
-                    detailIntent.putExtra(getString(R.string.title), title);
-                    detailIntent.putExtra(getString(R.string.description), description);
-                    detailIntent.putExtra(getString(R.string.rating), rating);
-                    detailIntent.putExtra(getString(R.string.release_date), releaseDate);
-                    detailIntent.putExtra(getString(R.string.movie_id), id);
-                    startActivity(detailIntent);
-                }
-            });
-
-            gridRow.addView(poster);
-        }
-    }
-
     private void loadFavorites() {
         Uri uri = FavoritesProvider.CONTENT_URI;
         Cursor cursor = getContentResolver()
@@ -286,6 +221,57 @@ public class MainActivity extends AppCompatActivity {
             noFavorites.setTextColor(getResources().getColor(R.color.fontLight));
             mPosterGrid.removeAllViews();
             mPosterGrid.addView(noFavorites);
+        }
+    }
+
+    /* Creates grid items and add them to existing GridLayout. Each grid row should contain
+     * no more than 2 movie posters. This function clears out all pre-existing views from the
+     * UI before re-populating them each time.
+     */
+    private void populateUI() {
+        mPosterGrid.removeAllViews();
+
+        for (int i = 0; i < mPosterPaths.length; i++) {
+            final String posterUrl = POSTER_BASE_URL + POSTER_SIZE + mPosterPaths[i];
+            ImageView poster = new ImageView(this);
+            Picasso
+                    .with(this)
+                    .load(posterUrl)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_launcher_background)
+                    .into(poster);
+            poster.setAdjustViewBounds(true);
+
+            GridLayout.LayoutParams gridLayoutParams = new GridLayout.LayoutParams();
+            gridLayoutParams.width = GridLayout.LayoutParams.WRAP_CONTENT;
+            gridLayoutParams.height = GridLayout.LayoutParams.WRAP_CONTENT;
+            gridLayoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            gridLayoutParams.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            poster.setLayoutParams(gridLayoutParams);
+
+            /* Sends movie data into DetailActivity via Intent */
+            final String posterKey = mPosterPaths[i];
+            final String title = mTitleList[i];
+            final String description = mDescriptionList[i];
+            final double rating = mRatingList[i];
+            final String releaseDate = mDateList[i];
+            final String id = mIdList[i];
+            poster.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent detailIntent =
+                            new Intent(MainActivity.this, DetailActivity.class);
+                    detailIntent.putExtra(getString(R.string.poster_url), posterKey);
+                    detailIntent.putExtra(getString(R.string.title), title);
+                    detailIntent.putExtra(getString(R.string.description), description);
+                    detailIntent.putExtra(getString(R.string.rating), rating);
+                    detailIntent.putExtra(getString(R.string.release_date), releaseDate);
+                    detailIntent.putExtra(getString(R.string.movie_id), id);
+                    startActivity(detailIntent);
+                }
+            });
+
+            mPosterGrid.addView(poster);
         }
     }
 }
