@@ -29,6 +29,11 @@ public class FavoritesProvider extends ContentProvider {
     public static final String COLUMN_ID = "_ID";
     public static final String COLUMN_MOVIE_ID = "movie_id";
     public static final String COLUMN_TITLE = "title";
+    public static final String COLUMN_POSTER = "poster_key";
+    public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_RATING = "rating";
+    public static final String COLUMN_RELEASE_DATE = "release_date";
+
 
     private DbHelper mDbHelper;
 
@@ -54,7 +59,8 @@ public class FavoritesProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor cursor;
         cursor = mDbHelper.getReadableDatabase().query(
                 DbHelper.TABLE_NAME,
@@ -70,12 +76,14 @@ public class FavoritesProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
+                      @Nullable String[] selectionArgs) {
         throw new UnsupportedOperationException("No update is necessary for this application.");
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, @Nullable String selection,
+                      @Nullable String[] selectionArgs) {
         final SQLiteDatabase database = mDbHelper.getWritableDatabase();
         if (null == selection) {
             selection = "1";

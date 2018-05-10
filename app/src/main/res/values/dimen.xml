@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="header_text">35sp</dimen>
+    <dimen name="subheader_text">20sp</dimen>
+    <dimen name="date_text">30sp</dimen>
+    <dimen name="rating_text">20sp</dimen>
+    <dimen name="button_text"></dimen>
+    <dimen name="readable_text">15sp</dimen>
+    <dimen name="header_padding">25dp</dimen>
+    <dimen name="poster_padding">10dp</dimen>
+    <dimen name="button_padding">7dp</dimen>
+    <dimen name="text_padding">15dp</dimen>
+    <dimen name="layout_margin">10dp</dimen>
+</resources>

@@ -21,7 +21,11 @@ public class DbHelper extends SQLiteOpenHelper {
                 + " ("
                 + FavoritesProvider.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + FavoritesProvider.COLUMN_MOVIE_ID + " INTEGER NOT NULL, "
-                + FavoritesProvider.COLUMN_TITLE + " TEXT NOT NULL);";
+                + FavoritesProvider.COLUMN_TITLE + " TEXT NOT NULL, "
+                + FavoritesProvider.COLUMN_DESCRIPTION + " TEXT, "
+                + FavoritesProvider.COLUMN_POSTER + " TEXT, "
+                + FavoritesProvider.COLUMN_RATING + " REAL, "
+                + FavoritesProvider.COLUMN_RELEASE_DATE + " TEXT);";
         db.execSQL(SQL_CREATE_FAVORITES_TABLE);
     }
 

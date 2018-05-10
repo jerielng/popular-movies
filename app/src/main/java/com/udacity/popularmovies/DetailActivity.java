@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import java.net.URL;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private ScrollView mDetailScrollView;
     private ImageView mPosterView;
     private TextView mTitleView;
     private TextView mDescriptionView;
@@ -37,12 +39,16 @@ public class DetailActivity extends AppCompatActivity {
     private LinearLayout mTrailerList;
     private LinearLayout mReviewList;
 
-    private String mPosterUrl;
+    private String mPosterKey;
     private String mTitle;
     private String mDescription;
     private double mRating;
     private String mReleaseDate;
     private String mId;
+
+    /* URL components for retrieving poster images */
+    private final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/";
+    private final String POSTER_SIZE = "w185/";
 
     private final String TRAILER_BASE_URL = "http://youtube.com/watch?v=";
     private final String PARAM_RESULTS = "results";
@@ -54,17 +60,20 @@ public class DetailActivity extends AppCompatActivity {
 
     private String[] mTrailerKeys;
     private String[] mTrailerNames;
-
     private String[] mReviewAuthors;
     private String[] mReviewContent;
 
     private int reviewCounter;
+
+    private final String xCoord = "X-Coordinates";
+    private final String yCoord = "Y-Coordinates";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        mDetailScrollView = findViewById(R.id.detail_scroll_view);
         mPosterView = findViewById(R.id.poster_image);
         mTitleView = findViewById(R.id.title_view);
         mDescriptionView = findViewById(R.id.description_text);
@@ -82,7 +91,7 @@ public class DetailActivity extends AppCompatActivity {
         Intent mainIntent = getIntent();
         Bundle movieDetails = mainIntent.getExtras();
         if (movieDetails != null) {
-            mPosterUrl = movieDetails.getString(getString(R.string.poster_url));
+            mPosterKey = movieDetails.getString(getString(R.string.poster_url));
             mTitle = movieDetails.getString(getString(R.string.title));
             mDescription = movieDetails.getString(getString(R.string.description));
             mRating = movieDetails.getDouble(getString(R.string.rating));
@@ -95,7 +104,24 @@ public class DetailActivity extends AppCompatActivity {
         new FetchReviewsTask().execute();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(xCoord, mDetailScrollView.getScrollX());
+        outState.putInt(yCoord, mDetailScrollView.getScrollY());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            mDetailScrollView.scrollTo(savedInstanceState.getInt(xCoord),
+                    savedInstanceState.getInt(yCoord));
+        }
+    }
+
     private void populateUI() {
+        final String mPosterUrl = POSTER_BASE_URL + POSTER_SIZE + mPosterKey;
         Picasso
                 .with(this)
                 .load(mPosterUrl)
@@ -129,6 +155,10 @@ public class DetailActivity extends AppCompatActivity {
                     ContentValues mValues = new ContentValues();
                     mValues.put(FavoritesProvider.COLUMN_MOVIE_ID, mId);
                     mValues.put(FavoritesProvider.COLUMN_TITLE, mTitle);
+                    mValues.put(FavoritesProvider.COLUMN_POSTER, mPosterKey);
+                    mValues.put(FavoritesProvider.COLUMN_DESCRIPTION, mDescription);
+                    mValues.put(FavoritesProvider.COLUMN_RATING, mRating);
+                    mValues.put(FavoritesProvider.COLUMN_RELEASE_DATE, mReleaseDate);
                     getContentResolver().insert(FavoritesProvider.CONTENT_URI, mValues);
 
                     ((Button) v).setText(getString(R.string.favorite_marked));

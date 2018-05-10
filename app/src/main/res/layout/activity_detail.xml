@@ -7,7 +7,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/detail_scroll_view">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -15,8 +16,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="35sp"
-                android:padding="25sp"
+                android:textSize="@dimen/header_text"
+                android:padding="@dimen/header_padding"
                 android:textColor="@color/fontLight"
                 android:background="@color/detailTheme"
                 android:id="@+id/title_view"/>
@@ -24,13 +25,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="10sp">
+                android:padding="@dimen/layout_margin">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/default_description"
                     android:layout_weight="4"
-                    android:padding="10sp"
+                    android:padding="@dimen/poster_padding"
                     android:id="@+id/poster_image"/>
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -42,22 +43,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:textSize="30sp"
+                        android:textSize="@dimen/date_text"
                         android:id="@+id/date_text"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:textSize="20sp"
-                        android:padding="10sp"
+                        android:textSize="@dimen/rating_text"
+                        android:padding="@dimen/text_padding"
                         android:id="@+id/rating_text"/>
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@color/detailTheme"
                         android:layout_gravity="center_horizontal"
-                        android:padding="7sp"
-                        android:layout_margin="10sp"
+                        android:padding="@dimen/button_padding"
+                        android:layout_margin="@dimen/layout_margin"
                         android:textColor="@color/fontLight"
                         android:text="@string/mark_favorite"
                         android:id="@+id/favorite_button"/>
@@ -66,8 +67,8 @@
                         android:layout_height="wrap_content"
                         android:background="@color/detailTheme"
                         android:layout_gravity="center_horizontal"
-                        android:padding="7sp"
-                        android:layout_margin="10sp"
+                        android:padding="@dimen/button_padding"
+                        android:layout_margin="@dimen/layout_margin"
                         android:textColor="@color/fontLight"
                         android:text="@string/share_trailer"
                         android:id="@+id/share_button"
@@ -78,14 +79,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="15sp"
-                android:textSize="15sp"
+                android:padding="@dimen/text_padding"
+                android:textSize="@dimen/readable_text"
                 android:id="@+id/description_text"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="15sp"
-                android:textSize="20sp"
+                android:padding="@dimen/text_padding"
+                android:textSize="@dimen/subheader_text"
                 android:background="@color/detailTheme"
                 android:textColor="@color/fontLight"
                 android:textAlignment="center"
@@ -94,13 +95,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="15sp"
+                android:padding="@dimen/text_padding"
                 android:id="@+id/trailer_list"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="15sp"
-                android:textSize="20sp"
+                android:padding="@dimen/text_padding"
+                android:textSize="@dimen/subheader_text"
                 android:background="@color/detailTheme"
                 android:textColor="@color/fontLight"
                 android:textAlignment="center"
@@ -109,24 +110,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="15sp"
+                android:padding="@dimen/text_padding"
                 android:id="@+id/review_list">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/subheader_text"
                     android:id="@+id/author_text"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/readable_text"
                     android:textStyle="italic"
-                    android:padding="25sp"
+                    android:padding="@dimen/text_padding"
                     android:id="@+id/content_text"/>
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:padding="@dimen/button_padding"
                     android:text="@string/next_review"
                     android:background="@color/detailTheme"
                     android:textColor="@color/fontLight"

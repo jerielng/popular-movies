@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -27,8 +29,7 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     private LinearLayout mPosterGrid;
-    private LinearLayout mFavoritesList;
-    private LinearLayout mFavoritesHolder;
+    private ScrollView mScrollView;
 
     private String mSortType;
 
@@ -54,14 +55,15 @@ public class MainActivity extends AppCompatActivity {
     private String[] mIdList;
 
     private final String savedSort = "Saved Sort Type";
+    private final String xCoord = "X-Coordinates";
+    private final String yCoord = "Y-Coordinates";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mPosterGrid = findViewById(R.id.poster_grid);
-        mFavoritesList = findViewById(R.id.favorites_list);
-        mFavoritesHolder = findViewById(R.id.favorites_holder);
+        mScrollView = findViewById(R.id.scroll_view);
     }
 
     @Override
@@ -95,6 +97,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(savedSort, mSortType);
+        outState.putStringArray(PARAM_POSTER_PATH, mPosterPaths);
+        outState.putStringArray(PARAM_TITLE, mTitleList);
+        outState.putStringArray(PARAM_ID, mIdList);
+        outState.putStringArray(PARAM_OVERVIEW, mDescriptionList);
+        outState.putDoubleArray(PARAM_VOTE_AVERAGE, mRatingList);
+        outState.putStringArray(PARAM_RELEASE_DATE, mDateList);
+        outState.putInt(xCoord, mScrollView.getScrollX());
+        outState.putInt(yCoord, mScrollView.getScrollY());
         super.onSaveInstanceState(outState);
     }
 
@@ -103,11 +113,15 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
             mSortType = savedInstanceState.getString(savedSort);
-            if (mSortType.equals(this.getString(R.string.favorites_sort))) {
-                loadFavorites();
-            } else {
-                new FetchMoviesTask().execute();
-            }
+            mPosterPaths = savedInstanceState.getStringArray(PARAM_POSTER_PATH);
+            mTitleList = savedInstanceState.getStringArray(PARAM_TITLE);
+            mIdList = savedInstanceState.getStringArray(PARAM_ID);
+            mDescriptionList = savedInstanceState.getStringArray(PARAM_OVERVIEW);
+            mRatingList = savedInstanceState.getDoubleArray(PARAM_VOTE_AVERAGE);
+            mDateList = savedInstanceState.getStringArray(PARAM_RELEASE_DATE);
+            populateUI();
+            mScrollView.scrollTo(savedInstanceState.getInt(xCoord),
+                    savedInstanceState.getInt(yCoord));
         }
     }
 
@@ -172,9 +186,6 @@ public class MainActivity extends AppCompatActivity {
      * UI before re-populating them each time.
      */
     private void populateUI() {
-        /* Toggles between fetched movies and favorites list */
-        mFavoritesList.setVisibility(View.GONE);
-        mPosterGrid.setVisibility(View.VISIBLE);
         mPosterGrid.removeAllViews();
 
         LinearLayout.LayoutParams rowLayoutParams =
@@ -212,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
             poster.setAdjustViewBounds(true);
 
             /* Sends movie data into DetailActivity via Intent */
+            final String posterKey = mPosterPaths[i];
             final String title = mTitleList[i];
             final String description = mDescriptionList[i];
             final double rating = mRatingList[i];
@@ -221,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
-                    detailIntent.putExtra(getString(R.string.poster_url), posterUrl);
+                    detailIntent.putExtra(getString(R.string.poster_url), posterKey);
                     detailIntent.putExtra(getString(R.string.title), title);
                     detailIntent.putExtra(getString(R.string.description), description);
                     detailIntent.putExtra(getString(R.string.rating), rating);
@@ -236,36 +248,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadFavorites() {
-        /* Toggles between fetched movies and favorites list */
-        mPosterGrid.setVisibility(View.GONE);
-        mFavoritesList.setVisibility(View.VISIBLE);
-        mFavoritesHolder.removeAllViews();
-
         Uri uri = FavoritesProvider.CONTENT_URI;
         Cursor cursor = getContentResolver()
                 .query(uri, null, null, null, null);
         if (cursor != null && cursor.moveToFirst()) { //If there are existing favorited items
+            int i = 0;
+            int resultsLength = cursor.getCount();
+            mIdList = new String[resultsLength];
+            mTitleList = new String[resultsLength];
+            mPosterPaths = new String[resultsLength];
+            mDescriptionList = new String[resultsLength];
+            mRatingList = new double[resultsLength];
+            mDateList = new String[resultsLength];
             while (!cursor.isAfterLast()) {
-                String id = cursor
+                mIdList[i] = cursor
                         .getString(cursor.getColumnIndex(FavoritesProvider.COLUMN_MOVIE_ID));
-                String title = cursor
+                mTitleList[i] = cursor
                         .getString(cursor.getColumnIndex(FavoritesProvider.COLUMN_TITLE));
-                String favoriteText = id + ": " + title;
-                TextView favoriteItem = new TextView(this);
-                favoriteItem.setText(favoriteText);
-                favoriteItem.setTextSize(18);
-                favoriteItem.setTextColor(getResources().getColor(R.color.fontLight));
-                favoriteItem.setPadding( 0, 15, 0, 15);
-                mFavoritesHolder.addView(favoriteItem);
+                mPosterPaths[i] = cursor.
+                        getString(cursor.getColumnIndex(FavoritesProvider.COLUMN_POSTER));
+                mDescriptionList[i] = cursor
+                        .getString(cursor.getColumnIndex(FavoritesProvider.COLUMN_DESCRIPTION));
+                mRatingList[i] = cursor
+                        .getDouble(cursor.getColumnIndex(FavoritesProvider.COLUMN_RATING));
+                mDateList[i] = cursor.
+                        getString(cursor.getColumnIndex(FavoritesProvider.COLUMN_RELEASE_DATE));
+                i++;
                 cursor.moveToNext();
             }
             cursor.close();
+            populateUI();
         } else { //Create placeholder text if there are no favorited items
             TextView noFavorites = new TextView(this);
             noFavorites.setText(getString(R.string.no_favorites));
             noFavorites.setTextSize(18);
+            noFavorites.setPadding(30, 30, 0, 0);
             noFavorites.setTextColor(getResources().getColor(R.color.fontLight));
-            mFavoritesHolder.addView(noFavorites);
+            mPosterGrid.removeAllViews();
+            mPosterGrid.addView(noFavorites);
         }
     }
 }
