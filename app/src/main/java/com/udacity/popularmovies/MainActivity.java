@@ -1,6 +1,8 @@
 package com.udacity.popularmovies;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -10,8 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.popularmovies.data.FavoritesProvider;
 import com.udacity.popularmovies.utilities.NetworkUtils;
 
 import org.json.JSONArray;
@@ -24,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout mPosterGrid;
     private LinearLayout mFavoritesList;
+    private LinearLayout mFavoritesHolder;
 
     private String mSortType;
 
@@ -56,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mPosterGrid = findViewById(R.id.poster_grid);
         mFavoritesList = findViewById(R.id.favorites_list);
+        mFavoritesHolder = findViewById(R.id.favorites_holder);
     }
 
     @Override
@@ -105,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* Ensures a default sort value if app opens for first time, without interfering
+     * with onRestoreInstanceState() logic.
+     */
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -134,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* Parses movie data out of JSON response from HTTP request */
     private void extractMovieData(String jsonString) {
         try {
             JSONObject moviesObject = new JSONObject(jsonString);
@@ -162,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
      * UI before re-populating them each time.
      */
     private void populateUI() {
+        /* Toggles between fetched movies and favorites list */
         mFavoritesList.setVisibility(View.GONE);
         mPosterGrid.setVisibility(View.VISIBLE);
         mPosterGrid.removeAllViews();
@@ -192,7 +203,12 @@ public class MainActivity extends AppCompatActivity {
             final String posterUrl = POSTER_BASE_URL + POSTER_SIZE + mPosterPaths[i];
             ImageView poster = new ImageView(this);
             poster.setLayoutParams(posterLayoutParams);
-            Picasso.with(this).load(posterUrl).into(poster);
+            Picasso
+                    .with(this)
+                    .load(posterUrl)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_launcher_background)
+                    .into(poster);
             poster.setAdjustViewBounds(true);
 
             /* Sends movie data into DetailActivity via Intent */
@@ -220,9 +236,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadFavorites() {
+        /* Toggles between fetched movies and favorites list */
         mPosterGrid.setVisibility(View.GONE);
         mFavoritesList.setVisibility(View.VISIBLE);
+        mFavoritesHolder.removeAllViews();
 
-        //query SQLite database
+        Uri uri = FavoritesProvider.CONTENT_URI;
+        Cursor cursor = getContentResolver()
+                .query(uri, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) { //If there are existing favorited items
+            while (!cursor.isAfterLast()) {
+                String id = cursor
+                        .getString(cursor.getColumnIndex(FavoritesProvider.COLUMN_MOVIE_ID));
+                String title = cursor
+                        .getString(cursor.getColumnIndex(FavoritesProvider.COLUMN_TITLE));
+                String favoriteText = id + ": " + title;
+                TextView favoriteItem = new TextView(this);
+                favoriteItem.setText(favoriteText);
+                favoriteItem.setTextSize(18);
+                favoriteItem.setTextColor(getResources().getColor(R.color.fontLight));
+                favoriteItem.setPadding( 0, 15, 0, 15);
+                mFavoritesHolder.addView(favoriteItem);
+                cursor.moveToNext();
+            }
+            cursor.close();
+        } else { //Create placeholder text if there are no favorited items
+            TextView noFavorites = new TextView(this);
+            noFavorites.setText(getString(R.string.no_favorites));
+            noFavorites.setTextSize(18);
+            noFavorites.setTextColor(getResources().getColor(R.color.fontLight));
+            mFavoritesHolder.addView(noFavorites);
+        }
     }
 }

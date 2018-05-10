@@ -23,6 +23,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+        <provider
+            android:authorities="@string/content_authority"
+            android:name=".data.FavoritesProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

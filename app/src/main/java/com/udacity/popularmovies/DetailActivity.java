@@ -1,6 +1,8 @@
 package com.udacity.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.popularmovies.data.FavoritesProvider;
 import com.udacity.popularmovies.utilities.NetworkUtils;
 
 import org.json.JSONArray;
@@ -93,7 +96,12 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void populateUI() {
-        Picasso.with(this).load(mPosterUrl).into(mPosterView);
+        Picasso
+                .with(this)
+                .load(mPosterUrl)
+                .placeholder(R.drawable.ic_launcher_background)
+                .error(R.drawable.ic_launcher_background)
+                .into(mPosterView);
         mPosterView.setAdjustViewBounds(true);
 
         mTitleView.setText(mTitle);
@@ -101,19 +109,33 @@ public class DetailActivity extends AppCompatActivity {
         mRatingView.setText(getString(R.string.out_of_ten, mRating));
         mReleaseDateView.setText(mReleaseDate.substring(0, 4));
 
+        if (favoriteExists(mId))
+        {
+            mFavoriteButton.setTextColor(getResources().getColor(R.color.favorited));
+            mFavoriteButton.setText(getString(R.string.favorite_marked));
+        }
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Button) v).setTextColor(getResources().getColor(R.color.favorited));
-                Toast.makeText(DetailActivity.this,
-                        "Saved to Favorites!", Toast.LENGTH_SHORT).show();
-                Toast.makeText(DetailActivity.this,
-                        "Removed from Favorites!", Toast.LENGTH_SHORT).show();
-                //query database with id
-                //if exists - delete
-                //if exists - change color to white
-                //if doesn't exist - insert id and title
-                //if doesn't exist - change color to favorited
+                if (favoriteExists(mId)) {
+                    String WHERE_PARAM = FavoritesProvider.COLUMN_MOVIE_ID + " = " + mId;
+                    getContentResolver().delete(FavoritesProvider.CONTENT_URI,
+                            WHERE_PARAM, null);
+                    ((Button) v).setText(getString(R.string.mark_favorite));
+                    ((Button) v).setTextColor(getResources().getColor(R.color.fontLight));
+                    Toast.makeText(DetailActivity.this,
+                            "Removed from Favorites!", Toast.LENGTH_SHORT).show();
+                } else {
+                    ContentValues mValues = new ContentValues();
+                    mValues.put(FavoritesProvider.COLUMN_MOVIE_ID, mId);
+                    mValues.put(FavoritesProvider.COLUMN_TITLE, mTitle);
+                    getContentResolver().insert(FavoritesProvider.CONTENT_URI, mValues);
+
+                    ((Button) v).setText(getString(R.string.favorite_marked));
+                    ((Button) v).setTextColor(getResources().getColor(R.color.favorited));
+                    Toast.makeText(DetailActivity.this,
+                            "Saved to Favorites!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -246,7 +268,8 @@ public class DetailActivity extends AppCompatActivity {
             if (mReviewContent.length == 1) {
                 findViewById(R.id.next_review_button).setVisibility(View.GONE);
             }
-            ((TextView) findViewById(R.id.author_text)).setText(mReviewAuthors[reviewCounter] + ":");
+            String authorHeader = mReviewAuthors[reviewCounter] + ":";
+            ((TextView) findViewById(R.id.author_text)).setText(authorHeader);
             ((TextView) findViewById(R.id.content_text)).setText(mReviewContent[reviewCounter]);
             findViewById(R.id.next_review_button).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -257,5 +280,24 @@ public class DetailActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    /* Queries the SQLite database to check if movie has already been favorited. */
+    public boolean favoriteExists(String id) {
+        Uri uri = FavoritesProvider.CONTENT_URI;
+        Cursor cursor = getContentResolver()
+                .query(uri, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String movieId = cursor
+                        .getString(cursor.getColumnIndex(FavoritesProvider.COLUMN_MOVIE_ID));
+                if (id.equals(movieId)) {
+                    return true;
+                }
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        return false;
     }
 }
