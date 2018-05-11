@@ -19,10 +19,10 @@ Since this application uses a RESTful API to retrieve movie data, an API key is 
 
 ## Screenshots
 
-<img width="45%" src="screenshots/Screenshot_1526062744.png" />
-<img width="45%" src="screenshots/Screenshot_1526062501.png" />
+<img width="35%" src="screenshots/Screenshot_1526062744.png" />
+<img width="35%" src="screenshots/Screenshot_1526062501.png" />
 <img width="60%" src="screenshots/Screenshot_1526062553.png" />
-<img width="45%" src="screenshots/Screenshot_1526062567.png" />
-<img width="45%" src="screenshots/Screenshot_1526062574.png" />
-<img width="45%" src="screenshots/Screenshot_1526062653.png" />
+<img width="35%" src="screenshots/Screenshot_1526062567.png" />
+<img width="35%" src="screenshots/Screenshot_1526062574.png" />
+<img width="35%" src="screenshots/Screenshot_1526062653.png" />
 <img width="60%" src="screenshots/Screenshot_1526062602.png" />
